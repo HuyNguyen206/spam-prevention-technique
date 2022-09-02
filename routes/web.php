@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HoneyPot;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,20 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::get('post/create', function () {
         return view('post.create');
     })->name('post.create');
+
     Route::post('post', function (Request $request) {
-        if (! $request->has('name')) { // normal/valid user will always send this field name
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Spam detected');
-        }
-
-        if ($request->get('name')) { // normal/valid user will always send this field name with empty/null value
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Spam detected');
-        }
-
-        $currentTime = microtime(true);
-        if ($currentTime - $request->get('time') <=3 ) { // fill data to quick
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Spam detected');
-        }
-
         Post::create(
             $request->validate([
                 'title' => 'required',
@@ -48,7 +37,7 @@ Route::middleware('auth')->group(function () {
             ])
         );
         return 'Published';
-    })->name('post.store');
+    })->middleware( HoneyPot::class)->name('post.store');
 });
 
 require __DIR__.'/auth.php';

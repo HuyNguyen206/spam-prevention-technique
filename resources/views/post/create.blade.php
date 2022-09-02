@@ -11,19 +11,7 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <form method="POST" action="{{ route('post.store') }}">
                         @csrf
-                        <div class="" style="display: none">
-                            <!-- Name field, time to flag spam -->
-                            <div>
-                                <x-label for="name" :value="__('name')" />
-
-                                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" autofocus />
-                            </div>
-                            <div>
-                                <x-label for="time" :value="__('My time')" />
-
-                                <x-input id="time" class="block mt-1 w-full" type="text" name="time" value="{{microtime(true)}}" required autofocus />
-                            </div>
-                        </div>
+                      <x-honeypot/>
 
                         <!-- Email Address -->
                         <div>
