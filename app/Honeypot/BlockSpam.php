@@ -1,13 +1,23 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Honeypot;
 
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HoneyPot
+class BlockSpam
 {
+    /**
+     * @var Honeypot
+     */
+    private $honeypot;
+
+    public function __construct(Honeypot $honeypot)
+    {
+        $this->honeypot = $honeypot;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -17,20 +27,7 @@ class HoneyPot
      */
     public function handle(Request $request, Closure $next)
     {
-        $configHoneyPot = config('honeypot');
-        if(! $configHoneyPot['enable']) {
-            return $next($request);
-        }
-        if (! $request->has($configHoneyPot['field_name'])) { // normal/valid user will always send this field name
-            $this->abort();
-        }
-
-        if ($request->get($configHoneyPot['field_name'])) { // normal/valid user will always send this field name with empty/null value
-            $this->abort();
-        }
-
-        $currentTime = microtime(true);
-        if ($currentTime - $request->get($configHoneyPot['field_time_name']) <= $configHoneyPot['minimum_time']) { // fill data to quick
+        if ($this->honeypot->detectSpam($request)) {
             $this->abort();
         }
 

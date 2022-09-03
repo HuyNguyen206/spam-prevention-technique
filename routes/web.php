@@ -1,10 +1,9 @@
 <?php
 
-use App\Http\Middleware\HoneyPot;
+use App\Honeypot\BlockSpam;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpFoundation\Response;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +36,7 @@ Route::middleware('auth')->group(function () {
             ])
         );
         return 'Published';
-    })->middleware( HoneyPot::class)->name('post.store');
+    })->middleware( BlockSpam::class)->name('post.store');
 });
 
 require __DIR__.'/auth.php';

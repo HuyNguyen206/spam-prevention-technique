@@ -165,6 +165,7 @@ return [
         /*
          * Package Service Providers...
          */
+        \App\Honeypot\HoneypotServiceProvider::class,
 
         /*
          * Application Service Providers...
