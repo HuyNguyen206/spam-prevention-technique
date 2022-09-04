@@ -12,6 +12,7 @@ class BlockSpam
      * @var Honeypot
      */
     private $honeypot;
+    public static $response;
 
     public function __construct(Honeypot $honeypot)
     {
@@ -27,7 +28,7 @@ class BlockSpam
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($this->honeypot->detectSpam($request)) {
+        if ($this->honeypot->detectSpam()) {
             $this->abort();
         }
 
@@ -35,10 +36,22 @@ class BlockSpam
     }
 
     /**
+     * @param callable $response
+     * @return void
+     */
+    public static function abortWith(callable $response): void
+    {
+        static::$response = $response;
+    }
+
+    /**
      * @return void
      */
     public function abort(): void
     {
+        if ($userFunction = static::$response) {
+            $userFunction();
+        }
         abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Spam detected');
     }
 }

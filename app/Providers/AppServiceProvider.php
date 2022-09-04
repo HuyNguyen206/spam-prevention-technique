@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Honeypot\BlockSpam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,5 +26,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Model::unguard();
+        BlockSpam::abortWith(function (){
+            abort(500);
+        });
     }
 }
